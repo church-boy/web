@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html ng-app="libraryApp">
+  <head>
+    <title>AngularJS Library Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      h1, h2 {
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: #2196F3;
+        color: white;
+      }
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+      button {
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #1976D2;
+      }
+      .form-container {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      input[type="text"],
+      input[type="number"],
+      input[type="search"] {
+        width: calc(100% - 22px);
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body ng-controller="MainController">
+    <h1>Library Management System</h1>
+
+    <div class="form-container">
+      <h2>Add Book</h2>
+      <input
+        type="text"
+        ng-model="newBook.title"
+        placeholder="Book Title"
+        required
+      />
+      <input
+        type="text"
+        ng-model="newBook.author"
+        placeholder="Author Name"
+        required
+      />
+      <input
+        type="number"
+        ng-model="newBook.price"
+        placeholder="Book Price"
+        required
+      />
+      <button ng-click="addBook()">Add Book</button>
+    </div>
+
+    <div>
+      <h2>Books</h2>
+      <input
+        type="search"
+        ng-model="bookFilter"
+        placeholder="Search books by title or author"
+      />
+      <table>
+        <tr>
+          <th>Book ID</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+        <tr ng-repeat="book in books | filter:bookFilter">
+          <td>{{ $index + 1 }}</td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author }}</td>
+          <td>${{ book.price }}</td>
+          <td>
+            <button ng-click="borrowBook(book)">Borrow</button>
+            <button ng-click="editBook(book)">Edit</button>
+            <button ng-click="removeBook(book)">Remove</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <h2>Borrowed Books</h2>
+    <div ng-repeat="item in borrowings">
+      <h3>
+        {{ item.title }} by {{ item.author }} - Borrowed by: {{ item.borrower }}
+        <button ng-click="returnBook(item)">Return</button>
+      </h3>
+    </div>
+
+    <!-- Edit Book Modal -->
+    <div ng-show="editingBook" class="form-container">
+      <h2>Edit Book</h2>
+      <input
+        type="text"
+        ng-model="editedBook.title"
+        placeholder="Book Title"
+      />
+      <input
+        type="text"
+        ng-model="editedBook.author"
+        placeholder="Author Name"
+      />
+      <input
+        type="number"
+        ng-model="editedBook.price"
+        placeholder="Book Price"
+      />
+      <button ng-click="updateBook()">Update</button>
+      <button ng-click="cancelEdit()">Cancel</button>
+    </div>
+
+    <!-- Borrow Book Modal -->
+    <div ng-show="borrowingBook" class="form-container">
+      <h2>Borrow Book</h2>
+      <h3>{{ selectedBook.title }} by {{ selectedBook.author }}</h3>
+      <input
+        type="text"
+        ng-model="borrower"
+        placeholder="Borrower Name"
+        required
+      />
+      <button ng-click="confirmBorrow()">Confirm</button>
+      <button ng-click="cancelBorrow()">Cancel</button>
+    </div>
+
+    <script>
+      angular
+        .module("libraryApp", [])
+        .factory("BorrowingService", function ($http) {
+          return {
+            add: function (item) {
+              const { _id, ...itemWithoutId } = item;
+              return $http.post("http://localhost:3000/borrowings", itemWithoutId);
+            },
+            remove: function (id) {
+              return $http.delete(`http://localhost:3000/borrowings/${id}`);
+            },
+            getBorrowings: function () {
+              return $http.get("http://localhost:3000/borrowings");
+            }
+          };
+        })
+        .controller("MainController", function ($scope, $http, BorrowingService) {
+          $scope.books = [];
+          $scope.borrowings = [];
+          $scope.newBook = { title: "", author: "", price: "" };
+          $scope.editingBook = false;
+          $scope.borrowingBook = false;
+          $scope.selectedBook = null;
+          $scope.borrower = "";
+          $scope.bookFilter = "";
+
+          // Fetch books from the server
+          $http.get("http://localhost:3000/books").then(function (response) {
+            $scope.books = response.data;
+          });
+
+          // Fetch borrowings
+          BorrowingService.getBorrowings().then(function (response) {
+            $scope.borrowings = response.data;
+          });
+
+          // Add a book
+          $scope.addBook = function () {
+            if ($scope.newBook.title && $scope.newBook.author && $scope.newBook.price) {
+              $http
+                .post("http://localhost:3000/books", $scope.newBook)
+                .then(function (response) {
+                  $scope.books.push(response.data);
+                  $scope.newBook = { title: "", author: "", price: "" };
+                });
+            }
+          };
+
+          // Edit a book
+          $scope.editBook = function (book) {
+            $scope.editingBook = true;
+            $scope.editedBook = angular.copy(book);
+          };
+
+          $scope.updateBook = function () {
+            if ($scope.editedBook.title && $scope.editedBook.author && $scope.editedBook.price) {
+              $http
+                .put(
+                  `http://localhost:3000/books/${$scope.editedBook._id}`,
+                  $scope.editedBook
+                )
+                .then(function () {
+                  const index = $scope.books.findIndex(
+                    (b) => b._id === $scope.editedBook._id
+                  );
+                  $scope.books[index] = angular.copy($scope.editedBook);
+                  $scope.cancelEdit();
+                });
+            } else {
+              alert("Book title, author and price are required.");
+            }
+          };
+
+          $scope.cancelEdit = function () {
+            $scope.editingBook = false;
+            $scope.editedBook = null;
+          };
+
+          // Remove a book
+          $scope.removeBook = function (book) {
+            $http
+              .delete(`http://localhost:3000/books/${book._id}`)
+              .then(function () {
+                $scope.books = $scope.books.filter(
+                  (b) => b._id !== book._id
+                );
+              });
+          };
+
+          // Borrow a book
+          $scope.borrowBook = function (book) {
+            $scope.borrowingBook = true;
+            $scope.selectedBook = book;
+          };
+
+          $scope.confirmBorrow = function () {
+            if ($scope.borrower) {
+              const borrowing = {
+                ...$scope.selectedBook,
+                borrower: $scope.borrower
+              };
+              BorrowingService.add(borrowing).then(function (response) {
+                $scope.borrowings.push(response.data);
+                $scope.cancelBorrow();
+              });
+            } else {
+              alert("Borrower name is required.");
+            }
+          };
+
+          $scope.cancelBorrow = function () {
+            $scope.borrowingBook = false;
+            $scope.selectedBook = null;
+            $scope.borrower = "";
+          };
+
+          // Return a book
+          $scope.returnBook = function (borrowing) {
+            BorrowingService.remove(borrowing._id).then(function () {
+              $scope.borrowings = $scope.borrowings.filter(
+                (item) => item._id !== borrowing._id
+              );
+            });
+          };
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app="bookApp">
+<head>
+    <title>Book Store</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="app.js"></script>
+    <style>
+        .book-list { margin: 20px; }
+        .book-item { 
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body ng-controller="BookController">
+    <h1>Book Store</h1>
+    
+    <!-- Filters -->
+    <div>
+        <input type="text" ng-model="searchBook" placeholder="Search books...">
+        <select ng-model="priceFilter">
+            <option value="">All Prices</option>
+            <option value="cheap">Under $20</option>
+            <option value="medium">$20 - $50</option>
+            <option value="expensive">Over $50</option>
+        </select>
+    </div>
+
+    <!-- Book List -->
+    <div class="book-list">
+        <div class="book-item" ng-repeat="book in books | filter:searchBook | priceFilter:priceFilter">
+            <h3>{{book.title}}</h3>
+            <p>Author: {{book.author}}</p>
+            <p>Price: {{book.price | currency}}</p>
+            <p>Genre: {{book.genre}}</p>
+        </div>
+    </div>
+</body>
+</html>

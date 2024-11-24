@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE employees [
+  <!ELEMENT employees (employee+)>
+  <!ELEMENT employee (id, name, position, salary)>
+  <!ELEMENT id (#PCDATA)>
+  <!ELEMENT name (#PCDATA)>
+  <!ELEMENT position (#PCDATA)>
+  <!ELEMENT salary (#PCDATA)>
+]>
+<employees>
+  <employee>
+    <id>1</id>
+    <name>John Doe</name>
+    <position>Software Engineer</position>
+    <salary>60000</salary>
+  </employee>
+  <employee>
+    <id>2</id>
+    <name>Jane Smith</name>
+    <position>Project Manager</position>
+    <salary>75000</salary>
+  </employee>
+  <employee>
+    <id>3</id>
+    <name>Emily Johnson</name>
+    <position>Intern</position>
+    <salary>30000</salary>
+  </employee>
+  <employee>
+    <id>4</id>
+    <name>Michael Brown</name>
+    <position>Senior Developer</position>
+    <salary>80000</salary>
+  </employee>
+</employees>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="hospitalApp">
+<head>
+    <title>Hospital Management</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .patient-list { margin: 20px 0; }
+        .patient-item { 
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .filter-section { margin-bottom: 20px; }
+        input[type="text"] {
+            padding: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body ng-controller="HospitalController">
+    <h1>Hospital Management System</h1>
+
+    <div class="filter-section">
+        <label>Search Patients: </label>
+        <input type="text" ng-model="searchText" placeholder="Search by name or department">
+    </div>
+
+    <div>
+        <h3>Add New Patient</h3>
+        <input type="text" ng-model="newPatient.name" placeholder="Patient Name">
+        <input type="text" ng-model="newPatient.age" placeholder="Age">
+        <input type="text" ng-model="newPatient.department" placeholder="Department">
+        <button ng-click="addPatient()">Add Patient</button>
+    </div>
+
+    <div class="patient-list">
+        <h3>Patient List</h3>
+        <div class="patient-item" ng-repeat="patient in patients | patientFilter:searchText">
+            <p><strong>Name:</strong> {{patient.name}}</p>
+            <p><strong>Age:</strong> {{patient.age}}</p>
+            <p><strong>Department:</strong> {{patient.department}}</p>
+            <p><strong>Status:</strong> {{patient.status}}</p>
+            <button ng-click="updateStatus(patient)">Update Status</button>
+        </div>
+    </div>
+
+    <div>
+        <h3>Hospital Statistics</h3>
+        <p>Total Patients: {{getTotalPatients()}}</p>
+        <p>Active Patients: {{getActivePatients()}}</p>
+    </div>
+</body>
+</html>

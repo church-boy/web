@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <title>AngularJS Sorting Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        input, button {
+            padding: 5px;
+            margin: 5px;
+        }
+        .table-class {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table-class th, .table-class td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body ng-app="myApp" ng-controller="myController">
+
+    <h1>{{ title }}</h1>
+
+    <!-- Form to add items -->
+    <div>
+        <form ng-submit="addItem()">
+            <div class="form-group">
+                <label for="name">Name: </label>
+                <input type="text" id="name" ng-model="newItem.name" placeholder="Enter name" required>
+            </div>
+            <div class="form-group">
+                <label for="age">Age: </label>
+                <input type="text" id="age" ng-model="newItem.age" placeholder="Enter age" required>
+            </div>
+            <button type="submit">Add Item</button>
+        </form>
+    </div>
+
+    <!-- Search and Sort -->
+    <div>
+        <input type="text" ng-model="searchText" placeholder="Search by name" />
+        <button ng-click="sortAscending()">Sort Ascending</button>
+        <button ng-click="sortDescending()">Sort Descending</button>
+    </div>
+
+    <!-- Table -->
+    <table class="table-class">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in items | filter: { name: searchText }">
+                <td>{{ item.name }}</td>
+                <td>{{ item.age }}</td>
+                <td>
+                    <button ng-click="deleteItem(item)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const app = angular.module("myApp", []);
+
+        app.controller("myController", function($scope) {
+            $scope.title = "AngularJS Sorting Example";
+            $scope.items = []; // List of items
+            $scope.newItem = {}; // Object for new item input
+
+            // Add item to the list
+            $scope.addItem = function() {
+                if ($scope.newItem.name && $scope.newItem.age) {
+                    $scope.items.push(angular.copy($scope.newItem));
+                    $scope.newItem = {}; // Clear input fields
+                }
+            };
+
+            // Delete item from the list
+            $scope.deleteItem = function(item) {
+                const index = $scope.items.indexOf(item);
+                if (index > -1) {
+                    $scope.items.splice(index, 1);
+                }
+            };
+
+            // Sort items in ascending order by name
+            $scope.sortAscending = function() {
+                $scope.items.sort((a, b) => a.age-b.age);
+            };
+
+            // Sort items in descending order by name
+            $scope.sortDescending = function() {
+                $scope.items.sort((a, b) => b.age-a.age);
+            };
+        });
+    </script>
+
+</body>
+</html>

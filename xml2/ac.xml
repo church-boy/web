@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmployeeRegistration>
+    <Employee>
+        <EmployeeID>001</EmployeeID>
+        <FirstName>John</FirstName>
+        <LastName>Doe</LastName>
+        <DateOfBirth>1985-06-15</DateOfBirth>
+        <Gender>Male</Gender>
+        <Email>john.doe@example.com</Email>
+        <Phone>123-456-7890</Phone>
+        <Address>
+            <Street>123 Main St</Street>
+            <City>Springfield</City>
+            <State>IL</State>
+            <ZipCode>62701</ZipCode>
+        </Address>
+        <Position>Software Engineer</Position>
+        <Department>IT</Department>
+        <DateOfJoining>2023-01-15</DateOfJoining>
+        <Salary>75000</Salary>
+        <Status>Active</Status>
+    </Employee>
+    <Employee>
+        <EmployeeID>002</EmployeeID>
+        <FirstName>Jane</FirstName>
+        <LastName>Smith</LastName>
+        <DateOfBirth>1990-08-22</DateOfBirth>
+        <Gender>Female</Gender>
+        <Email>jane.smith@example.com</Email>
+        <Phone>987-654-3210</Phone>
+        <Address>
+            <Street>456 Elm St</Street>
+            <City>Springfield</City>
+            <State>IL</State>
+            <ZipCode>62702</ZipCode>
+        </Address>
+        <Position>Project Manager</Position>
+        <Department>IT</Department>
+        <DateOfJoining>2022-05-10</DateOfJoining>
+        <Salary>85000</Salary>
+        <Status>Active</Status>
+    </Employee>
+</EmployeeRegistration>
